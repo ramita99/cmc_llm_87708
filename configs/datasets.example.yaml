@@ -1,0 +1,10 @@
+datasets:
+  - name: NF-UNSW-NB15-v3
+    sidecar: /content/drive/MyDrive/REPLACE/unsw_sidecar.csv
+    detector: /content/drive/MyDrive/REPLACE/unsw_detector_outputs.csv
+  - name: NF-CSE-CIC-IDS2018-v3
+    sidecar: /content/drive/MyDrive/REPLACE/cic_sidecar.csv
+    detector: /content/drive/MyDrive/REPLACE/cic_detector_outputs.csv
+  - name: NF-ToN-IoT-v3
+    sidecar: /content/drive/MyDrive/REPLACE/ton_sidecar.csv
+    detector: /content/drive/MyDrive/REPLACE/ton_detector_outputs.csv
