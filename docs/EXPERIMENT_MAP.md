@@ -21,7 +21,7 @@ This map links the revised manuscript analyses to the executable code retained i
 - Exact protected fields: prediction, score, threshold, score margin
 - Semantic consistency: AlignScore
 - Existing code:
-  - `notebooks/CMC_R2_Full768_Gemma_Qwen_AlignScore_Colab.ipynb`
+  - `notebooks/CMC_FINAL_Primary_Gemma_Qwen_768_Colab.ipynb`
   - `scripts/02_run_primary_generation.py`
   - `scripts/03_recompute_primary_metrics.py`
   - `scripts/04_primary_paired_statistics.py`
@@ -34,7 +34,7 @@ This map links the revised manuscript analyses to the executable code retained i
 - 500 targets × 3 datasets × 4 conditions = 6,000 native notes
 - max_new_tokens=768
 - Existing code:
-  - `notebooks/CMC_R1_Gemma_ThreeState_768_Colab.ipynb`
+  - `notebooks/CMC_FINAL_FourState_Gemma_768_Colab.ipynb`
   - reused Detector-state 768 outputs from the primary run
 
 ## Secondary contextual source-boundary ablation (Tables 10-11)
@@ -49,6 +49,7 @@ This map links the revised manuscript analyses to the executable code retained i
   - `configs/contextual_final.yaml`
   - `scripts/06_run_contextual_ablation.py`
   - `scripts/07_evaluate_contextual_ablation.py`
+  - `scripts/08_contextual_alignscore.py`
   - `notebooks/CMC_FINAL_Contextual_Gemma_Qwen_1536_Colab.ipynb`
 
 ## Statistical interpretation
@@ -58,3 +59,8 @@ This map links the revised manuscript analyses to the executable code retained i
 - 10,000 paired bootstrap resamples
 - Holm correction within model-family comparison sets
 - Cross-state four-condition rates are descriptive; inferential conclusions are restricted to matched comparisons.
+
+
+## Manuscript table export
+
+`scripts/09_export_manuscript_tables.py` exports the protected Detector-state preservation table and contextual unsupported-security-extrapolation table directly from record-level result artifacts. The exporter computes the Table 8 mean from the four protected detector fields only; it does not reuse the broader required-field-completeness variable.
