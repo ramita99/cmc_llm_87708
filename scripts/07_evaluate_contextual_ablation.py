@@ -85,23 +85,99 @@ def unsupported_security_components(text: str) -> dict[str, int]:
     }
 
 
+def _canon_protocol(value) -> set[str]:
+    raw = str(value).strip().lower()
+    if raw.endswith(".0"):
+        raw = raw[:-2]
+    aliases = {
+        "1": {"1", "icmp"},
+        "6": {"6", "tcp"},
+        "17": {"17", "udp"},
+        "58": {"58", "icmpv6", "icmp6"},
+    }
+    for key, vals in aliases.items():
+        if raw == key or raw in vals:
+            return vals
+    return {raw}
+
+
+def _first_group(pattern: str, text: str):
+    m = re.search(pattern, text, flags=re.I)
+    return None if m is None else m.group(1)
+
+
 def context_fact_fidelity(context: dict, text: str) -> dict[str, float]:
-    lower = (text or "").lower()
+    """Conservative contradiction checks for facts that are explicitly verbalized.
+
+    Omission is allowed for concise contextual notes. A contradiction is recorded only
+    when a recognizable source/destination IP, role-specific port, or protocol statement
+    is present and disagrees with the supplied context.
+    """
+    text = text or ""
     flow = context.get("target_flow_metadata", {})
-    contradictions = 0
-    # Conservative exact-token checks for explicitly stated target facts.
-    for field in ("src_ip", "dst_ip", "src_port", "dst_port"):
-        if field in flow and str(flow[field]).lower() not in lower:
-            # Omission is permitted; do not treat absent values as contradiction.
-            pass
+    contradiction = 0
+
+    # Explicit role-labelled forms.
+    labelled = {
+        "src_ip": r"(?:source|src)\s*(?:ip|address)?\s*(?:is|=|:)?\s*([0-9]{1,3}(?:\.[0-9]{1,3}){3})",
+        "dst_ip": r"(?:destination|dst)\s*(?:ip|address)?\s*(?:is|=|:)?\s*([0-9]{1,3}(?:\.[0-9]{1,3}){3})",
+        "src_port": r"(?:source|src)\s*port\s*(?:is|=|:)?\s*(\d+)",
+        "dst_port": r"(?:destination|dst)\s*port\s*(?:is|=|:)?\s*(\d+)",
+    }
+    for field, pattern in labelled.items():
+        if field in flow:
+            observed = _first_group(pattern, text)
+            if observed is not None and str(observed) != str(flow[field]):
+                contradiction = 1
+
+    # Common compact narrative form: "between SRC and DST on ports SPORT->DPORT".
+    pair = re.search(
+        r"between\s+([0-9]{1,3}(?:\.[0-9]{1,3}){3})\s+and\s+"
+        r"([0-9]{1,3}(?:\.[0-9]{1,3}){3}).{0,80}?"
+        r"ports?\s+(\d+)\s*(?:->|to)\s*(\d+)",
+        text,
+        flags=re.I,
+    )
+    if pair:
+        expected = [flow.get("src_ip"), flow.get("dst_ip"), flow.get("src_port"), flow.get("dst_port")]
+        observed = list(pair.groups())
+        for obs, exp in zip(observed, expected):
+            if exp is not None and str(obs) != str(exp):
+                contradiction = 1
+
+    if "protocol" in flow:
+        protocol_observed = _first_group(
+            r"protocol\s*(?:is|=|:)?\s*([A-Za-z0-9]+)",
+            text,
+        )
+        if protocol_observed is None:
+            protocol_observed = _first_group(
+                r"\b(TCP|UDP|ICMPv?6?|\d+)\s+(?:connection|flow|communication|traffic)\b",
+                text,
+            )
+        if protocol_observed is not None:
+            if protocol_observed.lower() not in _canon_protocol(flow["protocol"]):
+                contradiction = 1
+
     graph = context.get("graph_local_context", {})
+    graph_labels = {
+        "src_in_degree": r"(?:source|src)\s+in[- ]?degree",
+        "src_out_degree": r"(?:source|src)\s+out[- ]?degree",
+        "dst_in_degree": r"(?:destination|dst)\s+in[- ]?degree",
+        "dst_out_degree": r"(?:destination|dst)\s+out[- ]?degree",
+        "repeated_edge_count": r"repeated[- _]?edge(?:\s+count)?",
+        "src_unique_neighbors": r"(?:source|src)\s+unique[- ]?neighbor(?:\s+count)?",
+        "dst_unique_neighbors": r"(?:destination|dst)\s+unique[- ]?neighbor(?:\s+count)?",
+    }
     graph_value_use = 0
-    for _, value in graph.items():
-        if str(value) in text:
+    for field, value in graph.items():
+        label = graph_labels.get(field)
+        if label and re.search(label + r".{0,30}?" + re.escape(str(value)), text, flags=re.I):
             graph_value_use = 1
             break
+
     return {
-        "contextual_flow_fact_contradiction": float(contradictions),
+        "contextual_flow_fact_contradiction": float(contradiction),
         "explicit_graph_value_use": float(graph_value_use) if graph else np.nan,
     }
 
