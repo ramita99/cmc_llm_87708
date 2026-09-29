@@ -96,7 +96,7 @@ def paired_continuous(a: pd.Series, b: pd.Series, reps: int, seed: int) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="configs/cmc_87708_contextual_final.yaml")
+    ap.add_argument("--config", default="configs/contextual_final.yaml")
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--batch-size", type=int, default=32)
