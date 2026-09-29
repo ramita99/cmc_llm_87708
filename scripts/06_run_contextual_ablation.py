@@ -108,8 +108,8 @@ def resolve_dtype(name: str) -> torch.dtype:
     raise ValueError(name)
 
 
-def load_model(model_id: str, dtype_name: str, attention_impl: str):
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+def load_model(model_id: str, dtype_name: str, attention_impl: str, revision: str | None = None):
+    tokenizer = AutoTokenizer.from_pretrained(model_id, revision=revision)
     tokenizer.padding_side = "left"
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -120,7 +120,7 @@ def load_model(model_id: str, dtype_name: str, attention_impl: str):
     }
     if attention_impl:
         kwargs["attn_implementation"] = attention_impl
-    model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
+    model = AutoModelForCausalLM.from_pretrained(model_id, revision=revision, **kwargs)
     model.eval()
     return model, tokenizer
 
@@ -212,12 +212,14 @@ def main() -> None:
 
     spec = cfg["models"][args.model_key]
     model_id = spec["model_id"]
+    model_revision = spec.get("revision")
     cases = prepare_cases(source_root, datasets, n)
 
     model, tokenizer = load_model(
         model_id,
         str(cfg.get("generation_dtype", "bfloat16")),
         str(cfg.get("attention_implementation", "sdpa")),
+        model_revision,
     )
 
     for dataset in datasets:
