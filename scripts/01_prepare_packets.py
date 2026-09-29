@@ -35,8 +35,8 @@ def drop_ground_truth_columns(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--experiment", default="configs/r2.yaml")
-    ap.add_argument("--datasets", default="configs/datasets.drive.yaml")
+    ap.add_argument("--experiment", default="configs/primary_final.yaml")
+    ap.add_argument("--datasets", default="configs/datasets.example.yaml")
     args = ap.parse_args()
 
     exp = load_yaml(args.experiment)
@@ -54,7 +54,7 @@ def main() -> None:
         detector = detector[detector["split"].astype(str) == "test"].copy()
 
         # Stored detector artifacts may contain offline ground truth. Remove all such columns
-        # before constructing the R2 sampling frame.
+        # before constructing the CMC 87708 sampling frame.
         detector_sampling, dropped_gt_columns = drop_ground_truth_columns(detector)
 
         sampled = sample_window_stratified_uniform(
