@@ -35,3 +35,11 @@ expected_datasets:
   - NF-ToN-IoT-v3
 expected_targets_per_dataset: 500
 expected_packet_states_per_target: 4
+
+models:
+  gemma:
+    model_id: google/gemma-2-9b-it
+    revision: 11c9b309abf73637e4b6f9a3fa1e92e615547819
+  qwen:
+    model_id: Qwen/Qwen2.5-7B-Instruct
+    revision: a09a35458c702b33eeacc393d103063234e8bc28
