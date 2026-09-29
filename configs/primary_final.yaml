@@ -1,0 +1,37 @@
+protocol_version: CMC-87708-PRIMARY-2026-09-29
+output_root: /content/drive/MyDrive/CMC_87708_primary_packets
+
+sample_seed: 7
+targets_per_dataset: 500
+sampling: window_stratified_uniform
+
+states:
+  - llm_only
+  - flow
+  - graph
+  - detector
+
+methods:
+  - proposed_source_gated
+  - basic_prompt
+  - deterministic_template
+
+full_state_for_method_comparison: detector
+
+generation_dtype: bfloat16
+attention_implementation: sdpa
+generation_batch_size: 4
+max_new_tokens: 768
+do_sample: false
+
+numeric_tolerance: 0.0001
+fallback_on_truncation: true
+bootstrap_replicates: 10000
+multiple_testing_correction: holm
+
+expected_datasets:
+  - NF-UNSW-NB15-v3
+  - NF-CSE-CIC-IDS2018-v3
+  - NF-ToN-IoT-v3
+expected_targets_per_dataset: 500
+expected_packet_states_per_target: 4
