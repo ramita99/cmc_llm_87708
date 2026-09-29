@@ -114,7 +114,7 @@ def continuous_compare(
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--experiment", default="configs/r2_full_frozen.yaml")
+    ap.add_argument("--experiment", default="configs/primary_final.yaml")
     args = ap.parse_args()
 
     exp = load_yaml(args.experiment)
