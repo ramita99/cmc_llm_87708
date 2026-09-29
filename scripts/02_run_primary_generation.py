@@ -42,7 +42,7 @@ def resolve_dtype(name: str) -> torch.dtype:
         if not torch.cuda.is_bf16_supported():
             raise RuntimeError(
                 "The selected GPU does not support BF16 efficiently. "
-                "Use an L4/A100-class runtime for the R2 generation protocol."
+                "Use an L4/A100-class runtime for the CMC 87708 generation protocol."
             )
         return torch.bfloat16
     if name in {"fp16", "float16"}:
@@ -310,7 +310,7 @@ def write_method_outputs(
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--experiment", default="configs/r2.yaml")
+    ap.add_argument("--experiment", default="configs/primary_final.yaml")
     ap.add_argument("--model", default="google/gemma-2-9b-it")
     ap.add_argument("--method", choices=ALL_METHODS, default=None,
                     help="Backward-compatible single-method mode.")
