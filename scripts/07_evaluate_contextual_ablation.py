@@ -205,7 +205,7 @@ def paired_binary(a: pd.Series, b: pd.Series, reps: int, seed: int) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="configs/cmc_87708_contextual_final.yaml")
+    ap.add_argument("--config", default="configs/contextual_final.yaml")
     args = ap.parse_args()
     cfg = load_yaml(args.config)
     root = Path(cfg["output_root"])
