@@ -1,0 +1,33 @@
+protocol_version: CMC-87708-FINAL-CONTEXTUAL-2026-09-29
+source_packet_root: /content/drive/MyDrive/CMC_R2_full_frozen_20260918
+output_root: /content/drive/MyDrive/CMC_87708_contextual_final_20260929
+
+sample_seed: 7
+targets_per_dataset: 500
+scopes:
+  - flow
+  - flow_graph
+policies:
+  - basic
+  - bounded
+
+models:
+  gemma:
+    model_id: google/gemma-2-9b-it
+  qwen:
+    model_id: Qwen/Qwen2.5-7B-Instruct
+
+generation_dtype: bfloat16
+attention_implementation: sdpa
+generation_batch_size: 4
+max_new_tokens: 1536
+do_sample: false
+
+numeric_tolerance: 0.0001
+bootstrap_replicates: 10000
+multiple_testing_correction: holm
+
+expected_datasets:
+  - NF-UNSW-NB15-v3
+  - NF-CSE-CIC-IDS2018-v3
+  - NF-ToN-IoT-v3
