@@ -195,7 +195,7 @@ def prepare_cases(source_root: Path, datasets: list[str], targets_per_dataset: i
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="configs/cmc_87708_contextual_final.yaml")
+    ap.add_argument("--config", default="configs/contextual_final.yaml")
     ap.add_argument("--model-key", choices=["gemma", "qwen"], required=True)
     ap.add_argument("--resume", action="store_true")
     args = ap.parse_args()
