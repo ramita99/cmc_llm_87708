@@ -1,6 +1,6 @@
 protocol_version: CMC-87708-FINAL-CONTEXTUAL-2026-09-29
-source_packet_root: /content/drive/MyDrive/CMC_R2_full_frozen_20260918
-output_root: /content/drive/MyDrive/CMC_87708_contextual_final_20260929
+source_packet_root: /content/drive/MyDrive/CMC_87708_primary_packets
+output_root: /content/drive/MyDrive/CMC_87708_contextual
 
 sample_seed: 7
 targets_per_dataset: 500
